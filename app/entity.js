@@ -1,9 +1,10 @@
-let _id = 0;
+let _ID = 0;
 
 class Entity {
-  constructor() {
-    this._id = ++_id;
-    this._manager = null
+  constructor(group) {
+    this.id = ++_ID;
+    this.manager = null
+    this.group = group;
   }
 
   set manager(manager) {

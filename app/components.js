@@ -17,7 +17,7 @@ class DimensionComponent extends Component {
     super();
     this.width = width;
     this.height = height;
-    this.radius = raidus;
+    this.radius = radius;
   }
 }
 

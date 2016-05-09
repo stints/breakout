@@ -23,9 +23,11 @@ class RenderSystem extends System {
     this.clearCanvas();
 
     for(let i = 0; i < entities.length; i++) {
+      // DimensionComponent
+      let width = entities[i].dimension.width;
+      let height = entities[i].dimension.height;
+
       // RenderComponent
-      let width = entities[i].render.width;
-      let height = entities[i].render.height;
       let color = entities[i].render.color;
 
       // PositionComponent

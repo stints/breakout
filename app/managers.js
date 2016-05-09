@@ -21,7 +21,7 @@ class EntityManager {
   createEntity(group) {
     this._groups[group] = this._groups[group] || [];
 
-    let entity = new Entity();
+    let entity = new Entity(group);
     entity.manager = this;
     this._entities.push(entity);
     this._groups[group].push(entity);
@@ -43,8 +43,17 @@ class EntityManager {
     entity.removeComponent(component);
     let entities = this._components[component]
     for(let i = 0; i < entities.length; i++) {
-      if(entities[i]._id == entity._id) {
+      if(entities[i].id == entity.id) {
         entities = entities.splice(i, 1);
+      }
+    }
+  }
+
+  removeAllComponents(entity) {
+    let keys = entity.keys();
+    for(let i = 0; i < keys.length; i++) {
+      if(keys[i] != 'id' && keys[i] != 'manager' && keys[i] != 'group') {
+        this.removeComponent(entity, keys[i]);
       }
     }
   }
@@ -52,7 +61,7 @@ class EntityManager {
   // return a single entity by id, return null if not found
   getEntityById(id) {
     for(let i = 0; i < this.total; i++) {
-      if(this._entities[i]._id == id) {
+      if(this._entities[i].id == id) {
         return this._entities[i];
       }
     }
@@ -81,12 +90,44 @@ class EntityManager {
       let entities = this._groups[group];
 
       for(let i = 0; i < entities.length; i++) {
-        if(entities[i]._id = entity._id) {
+        if(entities[i].id = entity.id) {
           return true;
         }
       }
     }
     return false;
+  }
+
+  removeEntity(entity) {
+    for(let i = 0; i < this.total; i++) {
+      if(this._entities.id === entity.id) {
+        this.removeAllComponents(entity);
+        this.removeEntityFromGroup(entity);
+        this._entities = this._entities.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  removeEntityFromGroup(entity) {
+    let group = entity.group;
+    if(this._groups.hasOwnProperty(group)) {
+      let entities = this._group[group];
+      for(let i = 0; i < entities.length; i++) {
+        if(entities[i].id === entity.id) {
+          this._groups[group] = this._groups[group].splice(i, 1);
+        }
+      }
+    }
+  }
+
+  removeEntitiesByGroup(group) {
+    if(this._groups.hasOwnProperty(group)) {
+      let entities = this._group[group];
+      for(let i = 0; i < entities.length; i++) {
+        this.removeEntity(entities[i]);
+      }
+    }
   }
 }
 
