@@ -45,10 +45,10 @@ class PositionComponent extends Component {
 }
 
 class InputComponent extends Component {
-  constructor(upKey, downKey) {
+  constructor(left, right) {
     super();
-    this.upKey = upKey;
-    this.downKey = downKey;
+    this.left = left;
+    this.right = right;
   }
 }
 
