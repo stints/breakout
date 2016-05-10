@@ -88,7 +88,7 @@ class InputSystem extends System {
       let left = entities[i].input.left;
       let right = entities[i].input.right;
 
-      entities[i].velocity.dx = this._keys[left] ? -7 : this._keys[right] ? 7 : 0;
+      entities[i].velocity.dx = this._keys[left] ? -20 : this._keys[right] ? 20 : 0;
     }
   }
 }
@@ -99,10 +99,10 @@ class CollisionSystem extends System {
   }
 
   intersect(entity1, entity2) {
-    return entity1.position.x < entity2.position.x + entity2.dimension.width &&
-            entity1.position.x + entity1.dimension.width > entity2.position.x &&
-            entity1.position.y < entity2.position.y + entity2.dimension.height &&
-            entity1.position.y + entity1.dimension.height > entity2.position.y;
+    return entity1.position.x + entity1.velocity.dx <= entity2.position.x + entity2.dimension.width &&
+            entity1.position.x + entity1.velocity.dx + entity1.dimension.width >= entity2.position.x &&
+            entity1.position.y + entity1.velocity.dy <= entity2.position.y + entity2.dimension.height &&
+            entity1.position.y + entity1.velocity.dy + entity1.dimension.height >= entity2.position.y;
   }
 
   // CollisionSystem assumes that anything with an CollisionComponent also has a PositionComponent
@@ -123,14 +123,17 @@ class CollisionSystem extends System {
           continue;
         }
         if(this.intersect(ball, entity)) {
-          if(entity.group === 'bricks') {
-            this._dispatch.emit('hit', entity, ball);
-          }
-          if(ball.position.y < entity.position.y || ball.position.y + ball.dimension.height > entity.position.y + entity.dimension.height) {
+          if(ball.position.y <= entity.position.y || ball.position.y + ball.dimension.height >= entity.position.y + entity.dimension.height) {
             ball.velocity.dy *= -1;
+            if(entity.group === 'bricks') {
+              this._dispatch.emit('hit', entity, ball);
+            }
           }
-          if(ball.position.x < entity.position.x || ball.position.x + ball.dimension.width > entity.position.x + entity.dimension.width) {
+          if(ball.position.x <= entity.position.x || ball.position.x + ball.dimension.width >= entity.position.x + entity.dimension.width) {
             ball.velocity.dx *= -1;
+            if(entity.group === 'bricks') {
+              this._dispatch.emit('hit', entity, ball);
+            }
           }
         }
       }
@@ -142,8 +145,8 @@ class CollisionSystem extends System {
       for(let j = 0; j < walls.length; j++) {
         let wall = walls[j];
         if(this.intersect(paddle, wall)) {
-          if(paddle.position.x + paddle.velocity.dx < wall.position.x + wall.dimension.width &&
-            paddle.position.x + paddle.dimension.width + (-1*paddle.velocity.dx) > wall.position.x + wall.dimension.width) { // paddle hits left wall
+          if(paddle.position.x + paddle.velocity.dx <= wall.position.x + wall.dimension.width &&
+            paddle.position.x + paddle.dimension.width + (-1*paddle.velocity.dx) >= wall.position.x + wall.dimension.width) { // paddle hits left wall
             console.log('hi')
             paddle.position.x = wall.position.x + wall.dimension.width;
           } else if(paddle.position.x + paddle.dimension.width >= wall.position.x) {

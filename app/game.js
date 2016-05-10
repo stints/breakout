@@ -16,14 +16,14 @@ class Game {
       new RenderComponent('rect', 'green'),
       new DimensionComponent(5, 5),
       new PositionComponent(150, 25),
-      new VelocityComponent(-3, 3),
+      new VelocityComponent(-15, 15),
       new CollisionComponent(true)
     );
 
     let paddle = this._manager.createEntity('paddles');
     this._manager.addComponent(paddle,
       new RenderComponent('rect', 'blue'),
-      new DimensionComponent(85, 15),
+      new DimensionComponent(140, 15),
       new InputComponent('KeyA','KeyD'),
       new CollisionComponent(true),
       new PositionComponent(400, 400),
@@ -63,6 +63,8 @@ class Game {
      //new PositionSystem(canvas, this._dispatch),
      //new TextSystem(canvas, this._dispatch)
     );
+
+    this._canvas.focus();
   }
 
   start() {
@@ -80,6 +82,7 @@ class Game {
         this._levels.nextLevel();
       }
     }
+
 
     window.requestAnimationFrame(() => this.update());
   }
