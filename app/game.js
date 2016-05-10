@@ -16,7 +16,7 @@ class Game {
       new RenderComponent('rect', 'green'),
       new DimensionComponent(5, 5),
       new PositionComponent(150, 25),
-      new VelocityComponent(-15, 15),
+      new VelocityComponent(-6,6,6,6),
       new CollisionComponent(true)
     );
 
@@ -27,7 +27,7 @@ class Game {
       new InputComponent('KeyA','KeyD'),
       new CollisionComponent(true),
       new PositionComponent(400, 400),
-      new VelocityComponent(0, 0)
+      new VelocityComponent(0, 0, 10, 10)
     );
 
     let topWall = this._manager.createEntity('walls');

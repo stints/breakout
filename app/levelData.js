@@ -29,11 +29,11 @@ var LEVELDATA = [
     'types': [ // dynamic data, index + 1 is used in entities position
       {
         'color': 'black',
-        'health': 2
+        'health': 1
       },
       {
         'color': 'red',
-        'health': 3
+        'health': 2
       }
     ],
     'entities': [ // location of each type of entity, 0 is no block, 1 is index 0 in types, 2 is index 1, etc...

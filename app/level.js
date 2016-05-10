@@ -15,7 +15,7 @@ class Level {
   }
 
   hasNextLevel() {
-    return this.currentLevel < this.levels.length;
+    return this.currentLevel + 1 < this.levels.length;
   }
 
   nextLevel() {

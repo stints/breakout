@@ -52,9 +52,21 @@ class VelocitySystem extends System {
     for(let i = 0; i < entities.length; i++) {
       let dx = entities[i].velocity.dx;
       let dy = entities[i].velocity.dy;
+      let maxdx = entities[i].velocity.maxdx;
+      let maxdy = entities[i].velocity.maxdy;
+
+      if(Math.abs(dx) > maxdx) {
+        dx = dx >= 0 ? maxdx : -1*maxdx;
+        entities[i].velocity.dx = dx;
+      }
+      if(Math.abs(dy) > maxdy) {
+        dy = dy >= 0 ? maxdy : -1*maxdy;
+        entities[i].velocity.dy = dy;
+      }
 
       entities[i].position.x += dx;
       entities[i].position.y += dy;
+
     }
   }
 }
@@ -125,15 +137,19 @@ class CollisionSystem extends System {
         if(this.intersect(ball, entity)) {
           if(ball.position.y <= entity.position.y || ball.position.y + ball.dimension.height >= entity.position.y + entity.dimension.height) {
             ball.velocity.dy *= -1;
-            if(entity.group === 'bricks') {
-              this._dispatch.emit('hit', entity, ball);
-            }
-          }
-          if(ball.position.x <= entity.position.x || ball.position.x + ball.dimension.width >= entity.position.x + entity.dimension.width) {
+          } else if(ball.position.x <= entity.position.x || ball.position.x + ball.dimension.width >= entity.position.x + entity.dimension.width) {
             ball.velocity.dx *= -1;
-            if(entity.group === 'bricks') {
-              this._dispatch.emit('hit', entity, ball);
+          }
+
+          if(entity.group === 'bricks') {
+            this._dispatch.emit('hit', entity, ball);
+          }
+          if(entity.group === 'paddles') {
+            let args = {
+              'ballx': ball.position.x,
+              'paddlex': entity.position.x
             }
+            this._dispatch.emit('paddleHit', entity, args)
           }
         }
       }
@@ -147,7 +163,6 @@ class CollisionSystem extends System {
         if(this.intersect(paddle, wall)) {
           if(paddle.position.x + paddle.velocity.dx <= wall.position.x + wall.dimension.width &&
             paddle.position.x + paddle.dimension.width + (-1*paddle.velocity.dx) >= wall.position.x + wall.dimension.width) { // paddle hits left wall
-            console.log('hi')
             paddle.position.x = wall.position.x + wall.dimension.width;
           } else if(paddle.position.x + paddle.dimension.width >= wall.position.x) {
             paddle.position.x = wall.position.x - paddle.dimension.width;
@@ -179,9 +194,20 @@ class HealthSystem extends System {
 
     for(let i = 0; i < entities.length; i++) {
       if(entities[i].health.health <= 0) {
-        console.log(entities[i])
         this._manager.removeEntity(entities[i]);
       }
     }
+  }
+}
+
+class PositionSystem extends System {
+  constructor(canvas, dispatch, manager) {
+    super(canvas, dispatch, manager);
+
+    this._dispatch.on('paddleHit', (entity, args) => this.paddleHit(entity, args));
+  }
+
+  paddleHit(entity, args) {
+
   }
 }

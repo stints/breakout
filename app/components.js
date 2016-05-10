@@ -29,10 +29,13 @@ class CollisionComponent extends Component {
 }
 
 class VelocityComponent extends Component {
-  constructor(dx, dy) {
+  constructor(dx, dy, maxdx, maxdy) {
     super();
     this.dx = dx;
     this.dy = dy;
+
+    this.maxdx = maxdx;
+    this.maxdy = maxdy;
   }
 }
 
