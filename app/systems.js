@@ -88,7 +88,7 @@ class InputSystem extends System {
       let left = entities[i].input.left;
       let right = entities[i].input.right;
 
-      entities[i].velocity.dx = this._keys[left] ? -5 : this._keys[right] ? 5 : 0;
+      entities[i].velocity.dx = this._keys[left] ? -7 : this._keys[right] ? 7 : 0;
     }
   }
 }
@@ -123,7 +123,9 @@ class CollisionSystem extends System {
           continue;
         }
         if(this.intersect(ball, entity)) {
-          //this._dispatch('hit', entity, ball);
+          if(entity.group === 'bricks') {
+            this._dispatch.emit('hit', entity, ball);
+          }
           if(ball.position.y < entity.position.y || ball.position.y + ball.dimension.height > entity.position.y + entity.dimension.height) {
             ball.velocity.dy *= -1;
           }
@@ -140,14 +142,42 @@ class CollisionSystem extends System {
       for(let j = 0; j < walls.length; j++) {
         let wall = walls[j];
         if(this.intersect(paddle, wall)) {
-          if(paddle.position.x < wall.position.x + wall.dimension.width &&
-            paddle.position.x + paddle.dimension.width > wall.position.x + wall.dimension.width) { // paddle hits left wall
-            console.log(paddle.position.x);
-            paddle.position.x = wall.position.x + wall.dimension.width
+          if(paddle.position.x + paddle.velocity.dx < wall.position.x + wall.dimension.width &&
+            paddle.position.x + paddle.dimension.width + (-1*paddle.velocity.dx) > wall.position.x + wall.dimension.width) { // paddle hits left wall
+            console.log('hi')
+            paddle.position.x = wall.position.x + wall.dimension.width;
           } else if(paddle.position.x + paddle.dimension.width >= wall.position.x) {
             paddle.position.x = wall.position.x - paddle.dimension.width;
           }
         }
+      }
+    }
+  }
+}
+
+class HealthSystem extends System {
+  constructor(canvas, dispatch, manager) {
+    super(canvas, dispatch, manager);
+
+    this._dispatch.on('hit', (entity, args) => this.onHit(entity, args));
+    this._dispatch.on('miss', (entity, args) => this.onMiss(entity, args));
+  }
+
+  onHit(entity, args) {
+    entity.health.health--;
+  }
+
+  onMiss(entity, args) {
+    entity.health.health--;
+  }
+
+  update() {
+    let entities = this._manager.getEntitiesByComponent('health');
+
+    for(let i = 0; i < entities.length; i++) {
+      if(entities[i].health.health <= 0) {
+        console.log(entities[i])
+        this._manager.removeEntity(entities[i]);
       }
     }
   }

@@ -3,7 +3,7 @@ let _ID = 0;
 class Entity {
   constructor(group) {
     this.id = ++_ID;
-    this.manager = null
+    this._manager = null
     this.group = group;
   }
 

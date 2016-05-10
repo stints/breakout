@@ -15,8 +15,8 @@ class Game {
     this._manager.addComponent(ball,
       new RenderComponent('rect', 'green'),
       new DimensionComponent(5, 5),
-      new PositionComponent(100, 25),
-      new VelocityComponent(-1, 1),
+      new PositionComponent(150, 25),
+      new VelocityComponent(-3, 3),
       new CollisionComponent(true)
     );
 
@@ -55,9 +55,10 @@ class Game {
     );
 
     this._systems.push(
-     new CollisionSystem(canvas, this._dispatch, this._manager),
-     new InputSystem(canvas, this._dispatch, this._manager, 'KeyA', 'KeyD'),
-     new VelocitySystem(canvas, this._dispatch, this._manager),
+     new InputSystem(this._canvas, this._dispatch, this._manager, 'KeyA', 'KeyD'),
+     new VelocitySystem(this._canvas, this._dispatch, this._manager),
+     new CollisionSystem(this._canvas, this._dispatch, this._manager),
+     new HealthSystem(this._canvas, this._dispatch, this._manager),
      new RenderSystem(this._canvas, this._dispatch, this._manager)
      //new PositionSystem(canvas, this._dispatch),
      //new TextSystem(canvas, this._dispatch)
@@ -72,6 +73,12 @@ class Game {
   update() {
     for(let i = 0; i < this._systems.length; i++) {
       this._systems[i].update();
+    }
+
+    if(this._manager.getEntitiesByGroup('bricks').length <= 0) {
+      if(this._levels.hasNextLevel()) {
+        this._levels.nextLevel();
+      }
     }
 
     window.requestAnimationFrame(() => this.update());

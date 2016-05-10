@@ -6,7 +6,10 @@
     <link rel="stylesheet" type="text/css" href="style.css" />
   </head>
   <body>
-    <canvas id="breakout" width="1000" height="580" tabindex="1"></canvas>
+    <div id="wrapper">
+      <canvas id="game" width="1000" height="580" tabindex="1"></canvas>
+      <canvas id="scene" width="1000" height="580" tabindex="1"></canvas>
+    </div>
     <script src="app/components.js"></script>
     <script src="app/entity.js"></script>
     <script src="app/managers.js"></script>
@@ -15,7 +18,7 @@
     <script src="app/systems.js"></script>
     <script src="app/game.js"></script>
     <script>
-      let canvas = document.getElementById('breakout');
+      let canvas = document.getElementById('game');
       let game = new Game(canvas);
       game.setup();
       game.start();

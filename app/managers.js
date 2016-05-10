@@ -41,18 +41,18 @@ class EntityManager {
 
   removeComponent(entity, component) {
     entity.removeComponent(component);
-    let entities = this._components[component]
+    let entities = this._components[component];
     for(let i = 0; i < entities.length; i++) {
       if(entities[i].id == entity.id) {
-        entities = entities.splice(i, 1);
+        entities.splice(i, 1);
       }
     }
   }
 
   removeAllComponents(entity) {
-    let keys = entity.keys();
+    let keys = Object.keys(entity);
     for(let i = 0; i < keys.length; i++) {
-      if(keys[i] != 'id' && keys[i] != 'manager' && keys[i] != 'group') {
+      if(keys[i] != 'id' && keys[i] != '_manager' && keys[i] != 'group') {
         this.removeComponent(entity, keys[i]);
       }
     }
@@ -100,10 +100,10 @@ class EntityManager {
 
   removeEntity(entity) {
     for(let i = 0; i < this.total; i++) {
-      if(this._entities.id === entity.id) {
+      if(this._entities[i].id === entity.id) {
         this.removeAllComponents(entity);
         this.removeEntityFromGroup(entity);
-        this._entities = this._entities.splice(i, 1);
+        this._entities.splice(i, 1);
         break;
       }
     }
@@ -112,10 +112,10 @@ class EntityManager {
   removeEntityFromGroup(entity) {
     let group = entity.group;
     if(this._groups.hasOwnProperty(group)) {
-      let entities = this._group[group];
+      let entities = this._groups[group];
       for(let i = 0; i < entities.length; i++) {
         if(entities[i].id === entity.id) {
-          this._groups[group] = this._groups[group].splice(i, 1);
+          this._groups[group].splice(i, 1);
         }
       }
     }
@@ -123,7 +123,7 @@ class EntityManager {
 
   removeEntitiesByGroup(group) {
     if(this._groups.hasOwnProperty(group)) {
-      let entities = this._group[group];
+      let entities = this._groups[group];
       for(let i = 0; i < entities.length; i++) {
         this.removeEntity(entities[i]);
       }
