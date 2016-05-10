@@ -16,7 +16,7 @@ class Game {
       new RenderComponent('rect', 'green'),
       new DimensionComponent(5, 5),
       new PositionComponent(100, 25),
-      new VelocityComponent(-3, 3),
+      new VelocityComponent(-1, 1),
       new CollisionComponent(true)
     );
 
@@ -55,10 +55,10 @@ class Game {
     );
 
     this._systems.push(
-     new RenderSystem(this._canvas, this._dispatch, this._manager),
-     new VelocitySystem(canvas, this._dispatch, this._manager),
+     new CollisionSystem(canvas, this._dispatch, this._manager),
      new InputSystem(canvas, this._dispatch, this._manager, 'KeyA', 'KeyD'),
-     new CollisionSystem(canvas, this._dispatch, this._manager)
+     new VelocitySystem(canvas, this._dispatch, this._manager),
+     new RenderSystem(this._canvas, this._dispatch, this._manager)
      //new PositionSystem(canvas, this._dispatch),
      //new TextSystem(canvas, this._dispatch)
     );

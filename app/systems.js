@@ -123,8 +123,13 @@ class CollisionSystem extends System {
           continue;
         }
         if(this.intersect(ball, entity)) {
-          //this._dispatch('hit', entity, ball); // handle brick health loss
-
+          //this._dispatch('hit', entity, ball);
+          if(ball.position.y < entity.position.y || ball.position.y + ball.dimension.height > entity.position.y + entity.dimension.height) {
+            ball.velocity.dy *= -1;
+          }
+          if(ball.position.x < entity.position.x || ball.position.x + ball.dimension.width > entity.position.x + entity.dimension.width) {
+            ball.velocity.dx *= -1;
+          }
         }
       }
     }
