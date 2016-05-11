@@ -41,10 +41,12 @@ class EntityManager {
 
   removeComponent(entity, component) {
     entity.removeComponent(component);
-    let entities = this._components[component];
-    for(let i = 0; i < entities.length; i++) {
-      if(entities[i].id == entity.id) {
-        entities.splice(i, 1);
+    if(this._components.hasOwnProperty(component)) {
+      let entities = this._components[component];
+      for(let i = 0; i < entities.length; i++) {
+        if(entities[i].id == entity.id) {
+          entities.splice(i, 1);
+        }
       }
     }
   }
@@ -140,6 +142,12 @@ class EventManager {
   on(type, callback) {
     this._events[type] = this._events[type] || {};
     this._events[type] = callback;
+  }
+
+  off(type) {
+    if(this._events.hasOwnProperty(type)) {
+      delete this._events[type];
+    }
   }
 
   emit(type, entity = null, args = null) {

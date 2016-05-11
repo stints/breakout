@@ -88,6 +88,10 @@ class InputSystem extends System {
       this._keys[e.code] = e.type == 'keydown';
     }
 
+    if(e.code == 'Space' && e.type == 'keyup') {
+      this._dispatch.emit('shoot', null, null);
+    }
+
     //this.dispatch.emit('keydown');
     e.preventDefault();
   }
@@ -135,16 +139,24 @@ class CollisionSystem extends System {
           continue;
         }
         if(this.intersect(ball, entity)) {
-          if(ball.position.y <= entity.position.y || ball.position.y + ball.dimension.height >= entity.position.y + entity.dimension.height) {
+          if(ball.position.y + ball.velocity.dy <= entity.position.y) {
             ball.velocity.dy *= -1;
-          } else if(ball.position.x <= entity.position.x || ball.position.x + ball.dimension.width >= entity.position.x + entity.dimension.width) {
+            ball.position.y = entity.position.y - ball.dimension.height;
+          } else if(ball.position.y + ball.velocity.dy + ball.dimension.height >= entity.position.y + entity.dimension.height) {
+            ball.velocity.dy *= -1;
+            ball.position.y = entity.position.y + entity.dimension.height;
+          } else if(ball.position.x + ball.velocity.dx <= entity.position.x) {
             ball.velocity.dx *= -1;
+            ball.position.x = entity.position.x - ball.dimension.width;
+          } else if(ball.position.x + ball.dimension.width >= entity.position.x + entity.dimension.width) {
+            ball.velocity.dx *= -1;
+            ball.position.x = entity.position.x + entity.dimension.width;
           }
 
           if(entity.group === 'bricks') {
             this._dispatch.emit('hit', entity, ball);
           }
-          if(entity.group === 'paddles') {
+          if(entity.group === 'paddles' && Math.abs(ball.velocity.dx) > 0) {
             let args = {
               'ballx': ball.position.x,
               'paddlex': entity.position.x
@@ -187,6 +199,7 @@ class HealthSystem extends System {
 
   onMiss(entity, args) {
     entity.health.health--;
+    this._dispatch.emit('scoreUpdate', entity, args);
   }
 
   update() {
@@ -208,6 +221,23 @@ class PositionSystem extends System {
   }
 
   paddleHit(entity, args) {
+    // handle angle changes for ball
+  }
 
+  update() {
+    // this system will check if the ball has gone below the paddle;
+    let ballEntities = this._manager.getEntitiesByGroup('balls');
+    let paddleEntities = this._manager.getEntitiesByGroup('paddles');
+
+    for(let i = 0; i < ballEntities.length; i++) {
+      let ball = ballEntities[i];
+      for(let j = 0; j < paddleEntities.length; j++) {
+        let paddle = paddleEntities[j];
+        if(ball.position.y > paddle.position.y + 5) { // ball has missed paddle
+          this._dispatch.emit('miss', ball, null);
+          this._dispatch.emit('restartBall', ball, null);
+        }
+      }
+    }
   }
 }

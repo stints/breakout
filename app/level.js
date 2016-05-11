@@ -35,16 +35,16 @@ class Level {
     let height = level.dimensions.height;
     let types = level.types;
 
-    let startingX = 50;
-    let startingY = 50;
+    let startingX = 67;
+    let startingY = 147;
 
     for(var row = 0; row < level.entities.length; row++) {
       for(var col = 0; col < level.entities[row].length; col++) {
         if(level.entities[row][col] === 0) {
           continue;
         };
-        let x = startingX + (col * width) + 1;
-        let y = startingY + (row * height) + 1;
+        let x = startingX + (col * width) + col;
+        let y = startingY + (row * height) + row;
         let color = types[level.entities[row][col] - 1].color;
         let health = types[level.entities[row][col] - 1].health;
         let entity = this.manager.createEntity(level.group);
