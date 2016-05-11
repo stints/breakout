@@ -10,9 +10,14 @@ class Game {
     this._systems = []
 
     this._scoreScene = new Score(document.getElementById('score'), this._manager, this._dispatch);
+    this._overlayScene= new Overlay(document.getElementById('scene'), this._manager, this._dispatch);
   }
 
   setup() {
+    this._overlayScene.drawStart();
+    this._inStartScene = true;
+    this._inPlay = false;
+
     let paddle = this._manager.createEntity('paddles');
     this._manager.addComponent(paddle,
       new RenderComponent('rect', 'blue'),
@@ -65,13 +70,33 @@ class Game {
     );
 
     this._canvas.focus();
-    this.restartBall();
 
     this._dispatch.on('restartBall', (entity, args) => this.restartBall(entity, args));
     this._scoreScene.draw(3);
+
+    this._dispatch.on('spaceEntered', (entity, args) => this.spaceEntered(entity, args));
+    this._dispatch.on('gameover', (entity, args) => this.gameover());
+  }
+
+  gameover() {
+    this._overlayScene.drawGameOver();
+    this._manager.removeAllEntites();
+  }
+
+  spaceEntered(entity, args) {
+    if(this._inStartScene) {
+      this._overlayScene.clearCanvas();
+      this._inStartScene = false;
+      this.restartBall();
+    } else {
+      if(!this._inPlay) {
+        this._dispatch.emit('shoot', entity, args);
+      }
+    }
   }
 
   restartBall(entity = null, args = null) {
+    this._inPlay = false;
     let health = entity != null ? entity.health.health : 3;
     this._manager.removeEntitiesByGroup('balls');
 
@@ -94,6 +119,7 @@ class Game {
   }
 
   shootBall(entity, args) {
+    this._inPlay = true;
     let ball = this._manager.getEntitiesByGroup('balls')[0];
     let paddle = this._manager.getEntitiesByGroup('paddles')[0];
 
@@ -120,6 +146,8 @@ class Game {
 
     if(this._manager.getEntitiesByGroup('bricks').length <= 0) {
       if(this._levels.hasNextLevel()) {
+        this.restartBall();
+        this._overlayScene.drawNextLevel();
         this._levels.nextLevel();
       }
     }

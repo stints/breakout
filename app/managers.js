@@ -131,6 +131,16 @@ class EntityManager {
       }
     }
   }
+
+  removeAllEntites() {
+    for(let i = 0; i < this._entities.length; i++) {
+      this.removeAllComponents(this._entities[i]);
+    }
+
+    this._groups = null;
+    this._components = null;
+    this._entities = null;
+  }
 }
 
 

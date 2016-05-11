@@ -89,7 +89,7 @@ class InputSystem extends System {
     }
 
     if(e.code == 'Space' && e.type == 'keyup') {
-      this._dispatch.emit('shoot', null, null);
+      this._dispatch.emit('spaceEntered', null, null);
     }
 
     //this.dispatch.emit('keydown');
@@ -200,6 +200,9 @@ class HealthSystem extends System {
   onMiss(entity, args) {
     entity.health.health--;
     this._dispatch.emit('scoreUpdate', entity, args);
+    if(entity.health.health <= 0) {
+      this._dispatch.emit('gameover', entity, args);
+    }
   }
 
   update() {

@@ -38,5 +38,60 @@ class Score extends Scene {
 class Overlay extends Scene {
   constructor(canvas, manager, dispatch) {
     super(canvas, manager, dispatch);
+
+    this.dispatch.on('gameover', (entity, args) => this.drawGameOver());
+    this.dispatch.on('nextlevel', (entity, args) => this.drawNextLevel());
+  }
+
+  clearCanvas() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  drawStart() {
+    this.clearCanvas();
+
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.ctx.font = '30px Arial';
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillText('BREAKOUT', 400, 270);
+    this.ctx.fillText('Press Space to Play', 350, 320);
+  }
+
+  drawNextLevel(step = 200) {
+    console.log(step)
+    let alpha = step / 100;
+
+    step--;
+
+    this.clearCanvas();
+
+    if(step <= 0) {
+      window.cancelAnimationFrame(this.pid);
+      return;
+    }
+
+    this.ctx.globalAlpha = alpha;
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.ctx.font = '30px Arial';
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillText('Next Level...', 390, 270);
+
+    this.pid = window.requestAnimationFrame(() => this.drawNextLevel(step));
+  }
+
+  drawGameOver() {
+    this.clearCanvas();
+
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.ctx.font = '30px Arial';
+    this.ctx.fillStyle = 'white';
+    this.ctx.fillText('BREAKOUT', 400, 270);
+    this.ctx.fillText('GAMEOVER', 400, 320);
   }
 }
